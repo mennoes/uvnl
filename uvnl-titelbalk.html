@@ -5,16 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UvNL Titelbalk Generator</title>
 <style>
-:root{--bg:#0d0d0d;--surface:#161616;--border:#2a2a2a;--accent:#004B36;--lavender:#D6ACFF;--fg:#e0e0e0;--muted:#666;--gap:1rem}
+:root{--bg:#090909;--surface:#141414;--border:#363636;--accent:#004B36;--accent-fg:#00c278;--lavender:#D6ACFF;--fg:#f0f0f0;--muted:#999;--input-bg:#080808;--hover-bg:#1e1e1e;--gap:1rem}
+body.light{--bg:#eeede6;--surface:#ffffff;--border:#c8c7c0;--accent:#004B36;--accent-fg:#004B36;--lavender:#6b2fa0;--fg:#1a1a1a;--muted:#777;--input-bg:#f5f4ed;--hover-bg:#ebebE3}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sans-serif;font-size:14px;min-height:100vh;padding:2rem}
+body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sans-serif;font-size:14px;min-height:100vh;padding:2rem;transition:background .2s,color .2s}
 h1{font-size:1.1rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--lavender);margin-bottom:1.5rem}
 h1 span{color:var(--muted);font-weight:400;letter-spacing:.04em;text-transform:none;font-size:.9rem}
 .layout{display:grid;grid-template-columns:280px 1fr;gap:1.5rem;max-width:1400px;margin:0 auto}
 .sidebar{display:flex;flex-direction:column;gap:var(--gap)}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem}
 .card-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.9rem}
-textarea{width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:4px;color:var(--fg);font-size:.95rem;padding:.75rem;resize:vertical;min-height:110px;font-family:inherit;line-height:1.6;outline:none}
+textarea{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:4px;color:var(--fg);font-size:.95rem;padding:.75rem;resize:vertical;min-height:110px;font-family:inherit;line-height:1.6;outline:none}
 textarea:focus{border-color:var(--accent)}
 .ctrl{display:flex;align-items:center;gap:.6rem;margin-top:.7rem}
 .ctrl-label{font-size:.78rem;color:var(--muted);min-width:80px}
@@ -24,21 +25,45 @@ textarea:focus{border-color:var(--accent)}
 .ctrl input[type=color]{width:28px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none;padding:1px}
 .color-hex{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .btn-secondary{width:100%;background:transparent;color:var(--fg);border:1px solid var(--border);border-radius:5px;padding:.7rem;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .12s,background .12s}
-.btn-secondary:hover{border-color:var(--lavender);background:#1a1a1a}
-.preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+.btn-secondary:hover{border-color:var(--lavender);background:var(--hover-bg)}
+.btn-secondary--dim{color:var(--muted);font-size:.72rem}
+.btn-add{width:100%;background:transparent;color:var(--lavender);border:1px dashed var(--border);border-radius:5px;padding:.65rem;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .12s,background .12s}
+.btn-add:hover{border-color:var(--lavender);background:var(--hover-bg)}
+.item-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .12s;margin-bottom:.75rem}
+.item-card.active{border-color:var(--accent)}
+.item-row{display:flex;gap:.5rem;padding:.75rem;align-items:flex-start}
+.item-text{flex:1;background:var(--input-bg);border:1px solid var(--border);border-radius:4px;color:var(--fg);font-size:.9rem;padding:.6rem;resize:vertical;min-height:66px;font-family:inherit;line-height:1.5;outline:none}
+.item-text:focus{border-color:var(--accent)}
+.item-actions{display:flex;flex-direction:column;gap:.3rem;flex-shrink:0}
+.item-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--muted);font-size:.8rem;width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .12s,color .12s;line-height:1}
+.item-btn:hover{border-color:var(--fg);color:var(--fg)}
+.item-settings{padding:0 .75rem .75rem;border-top:1px solid var(--border);display:none}
+.item-settings.open{display:block}
+.item-settings .ctrl{margin-top:.55rem}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--gap)}
+.preview-box.hidden{display:none}
+.fmt-checks{display:flex;flex-direction:column;gap:.55rem;margin-top:.3rem}
+.fmt-check{display:flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none}
+.fmt-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.fmt-check span{font-size:.8rem;color:var(--fg)}
+.fmt-check small{font-size:.7rem;color:var(--muted);margin-left:auto}
 .preview-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
 .preview-head{padding:.6rem .9rem;border-bottom:1px solid var(--border);display:flex;align-items:baseline;justify-content:space-between}
 .preview-head h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
-.preview-head small{font-size:.65rem;color:#444}
+.preview-head small{font-size:.65rem;color:var(--muted)}
 .checker{flex:1;padding:.75rem;background:repeating-conic-gradient(#1c1c1c 0% 25%,#242424 0% 50%) 0 0/14px 14px;display:flex;align-items:center;justify-content:center;min-height:120px}
-.checker canvas{max-width:100%;height:auto;display:block}
+.checker canvas{max-width:100%;height:auto;display:block;outline:1px solid rgba(255,255,255,.15);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 2px 12px rgba(0,0,0,.5)}
+.checker{position:relative}
+.canvas-edit-overlay{position:absolute;inset:0;background:transparent;border:none;color:transparent;caret-color:#fff;resize:none;font-family:inherit;font-size:1rem;padding:.75rem;cursor:text;z-index:10;outline:none;width:100%;box-sizing:border-box}
+.canvas-edit-overlay:focus{background:rgba(0,0,0,.55);color:#fff;font-size:1.1rem;line-height:1.6}
+.checker:not(:focus-within)::after{content:'klik om te bewerken';position:absolute;bottom:.5rem;left:50%;transform:translateX(-50%);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.25);pointer-events:none;white-space:nowrap}
 .btn-row{display:grid;grid-template-columns:1fr;border-top:1px solid var(--border)}
 .btn-dl{display:block;width:100%;background:transparent;border:none;color:var(--lavender);padding:.55rem .4rem;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .12s;text-align:center}
 .btn-dl+.btn-dl{border-left:1px solid var(--border)}
-.btn-dl:hover{background:#1f1f1f}
+.btn-dl:hover{background:var(--hover-bg)}
 .gallery-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;margin-top:var(--gap)}
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.65rem;margin-top:.75rem}
-.gallery-item{background:#0f0f0f;border:1px solid var(--border);border-radius:6px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.gallery-item{background:var(--input-bg);border:1px solid var(--border);border-radius:6px;overflow:hidden;cursor:pointer;transition:border-color .12s}
 .gallery-item:hover{border-color:var(--lavender)}
 .gallery-item .checker{min-height:70px;padding:.4rem}
 .gallery-meta{padding:.3rem .5rem;font-size:.62rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-top:1px solid var(--border)}
@@ -50,62 +75,44 @@ textarea:focus{border-color:var(--accent)}
 </head>
 <body>
 
-<h1>UvNL Titelbalk Generator <span>&#8212; titelbalken voor video &amp; socials</span></h1>
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem">
+  <h1 style="margin-bottom:0">UvNL Titelbalk Generator <span>&#8212; titelbalken voor video &amp; socials</span></h1>
+  <button onclick="toggleTheme()" id="themeBtn" style="background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--muted);padding:.4rem .8rem;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .12s,color .12s;white-space:nowrap;flex-shrink:0;margin-left:1rem" onmouseover="this.style.borderColor='var(--lavender)';this.style.color='var(--fg)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">&#9788; Licht</button>
+</div>
 
 <div class="layout">
   <div class="sidebar">
+    <div id="itemList"></div>
+    <button class="btn-add" onclick="addItem()">+ Voeg titelbalk toe</button>
     <div class="card">
-      <div class="card-label">Tekst (max 5 regels)</div>
-      <textarea id="txtInput" placeholder="EERSTE REGEL&#10;TWEEDE REGEL&#10;DERDE REGEL" rows="5"></textarea>
-      <div class="ctrl">
-        <span class="ctrl-label">Lettergrootte</span>
-        <input type="range" id="rFs" min="40" max="180" value="125">
-        <span class="ctrl-val"><span id="vFs">125</span>px</span>
-      </div>
-      <div class="ctrl">
-        <span class="ctrl-label">Zijmarge</span>
-        <input type="range" id="rMg" min="0" max="60" value="15">
-        <span class="ctrl-val"><span id="vMg">15</span>px</span>
-      </div>
-      <div class="ctrl">
-        <span class="ctrl-label">Regelafstand</span>
-        <input type="range" id="rGap" min="0" max="50" value="5">
-        <span class="ctrl-val"><span id="vGap">5</span>px</span>
+      <div class="card-label">Formaten</div>
+      <div class="fmt-checks">
+        <label class="fmt-check"><input type="checkbox" id="chk916" checked onchange="onFmtChange()"><span>9:16</span><small>1080×1920</small></label>
+        <label class="fmt-check"><input type="checkbox" id="chk169" onchange="onFmtChange()"><span>16:9</span><small>1920×1080</small></label>
+        <label class="fmt-check"><input type="checkbox" id="chk11" onchange="onFmtChange()"><span>1:1</span><small>1080×1080</small></label>
       </div>
     </div>
-    <div class="card">
-      <div class="card-label">Kleuren</div>
-      <div class="ctrl">
-        <span class="ctrl-label">Balk</span>
-        <input type="color" id="cBar" value="#004B36">
-        <span class="color-hex" id="hBar">#004B36</span>
-      </div>
-      <div class="ctrl">
-        <span class="ctrl-label">Tekst</span>
-        <input type="color" id="cTxt" value="#ffffff">
-        <span class="color-hex" id="hTxt">#ffffff</span>
-      </div>
-    </div>
-    <button class="btn-secondary" onclick="downloadAll()">&#8595; Download alle 3 PNG's</button>
+    <button class="btn-secondary" id="btnRenderAll" onclick="renderAll()">&#8595; Render alles</button>
+    <button class="btn-secondary" id="btnDownload" onclick="downloadAll()">&#8595; Download huidige balk</button>
   </div>
 
   <div>
     <div class="preview-grid">
-      <div class="preview-box">
+      <div class="preview-box" id="box916">
         <div class="preview-head"><h3>9:16</h3><small>1080 &times; 1920</small></div>
         <div class="checker"><canvas id="c916" width="1080" height="1920"></canvas></div>
         <div class="btn-row">
           <button class="btn-dl" onclick="dlFmt('916',1080,1920)">&#8595; PNG</button>
         </div>
       </div>
-      <div class="preview-box">
+      <div class="preview-box hidden" id="box169">
         <div class="preview-head"><h3>16:9</h3><small>1920 &times; 1080</small></div>
         <div class="checker"><canvas id="c169" width="1920" height="1080"></canvas></div>
         <div class="btn-row">
           <button class="btn-dl" onclick="dlFmt('169',1920,1080)">&#8595; PNG</button>
         </div>
       </div>
-      <div class="preview-box">
+      <div class="preview-box hidden" id="box11">
         <div class="preview-head"><h3>1:1</h3><small>1080 &times; 1080</small></div>
         <div class="checker"><canvas id="c11" width="1080" height="1080"></canvas></div>
         <div class="btn-row">
@@ -129,28 +136,143 @@ const FONT_DATA = 'AAEAAAASAQAABAAgRFNJRwAAAAEAA4+wAAAACEdERUYWLBZJAAABLAAAAFJHU
 const ff = new FontFace('OSGC', `url(data:font/truetype;base64,${FONT_DATA})`);
 ff.load().then(f => {
   document.fonts.add(f);
+  renderItemList();
   applyUrlParams();
   renderGallery();
+  generate();
+  addEditOverlays();
+  try { if (localStorage.getItem('uvnl_theme') === 'light') { document.body.classList.add('light'); G('themeBtn').textContent = '☾ Donker'; } } catch(e){}
+  updateBtnLabels();
 }).catch(() => {
+  renderItemList();
   applyUrlParams();
   renderGallery();
+  generate();
+  addEditOverlays();
+  updateBtnLabels();
 });
 
 const G = id => document.getElementById(id);
-const wire = (r, v) => G(r).addEventListener('input', () => { G(v).textContent = G(r).value; generate(); });
-wire('rFs','vFs'); wire('rMg','vMg'); wire('rGap','vGap');
-G('cBar').addEventListener('input', () => { G('hBar').textContent = G('cBar').value; generate(); });
-G('cTxt').addEventListener('input', () => { G('hTxt').textContent = G('cTxt').value; generate(); });
-G('txtInput').addEventListener('input', generate);
 
 const FMTS = [{id:'916',w:1080,h:1920},{id:'169',w:1920,h:1080},{id:'11',w:1080,h:1080}];
 
-function getSettings() {
+// ── State ─────────────────────────────────────────────────────
+const DEFAULTS = { fs: 125, mg: 15, gap: 5, bc: '#004B36', tc: '#ffffff' };
+const DEFAULT_TEXTS = [
+  'Deze truc laat je 20% meer onthouden',
+  'Zo word je 2x slimmer',
+  'De wetenschap achter beter leren',
+  'Dit doet iets met je brein',
+  'Wat niemand je vertelt over studeren',
+  'Waarom herhaling het geheim is',
+];
+let items = [{ ...DEFAULTS, text: DEFAULT_TEXTS[0], open: false }];
+let activeIdx = 0;
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function itemToSettings(item) {
   return {
-    lines: G('txtInput').value.split('\n').slice(0,5).map(l => l.trim()).filter(Boolean),
-    fs: +G('rFs').value, mg: +G('rMg').value, gap: +G('rGap').value,
-    bc: G('cBar').value, tc: G('cTxt').value
+    lines: item.text.split('\n').slice(0,5).map(l => l.trim()).filter(Boolean),
+    fs: item.fs, mg: item.mg, gap: item.gap, bc: item.bc, tc: item.tc
   };
+}
+function getSettings() { return itemToSettings(items[activeIdx]); }
+
+function renderItemList() {
+  const list = G('itemList');
+  list.innerHTML = '';
+  items.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'item-card' + (i === activeIdx ? ' active' : '');
+    card.innerHTML = `
+      <div class="item-row">
+        <textarea class="item-text" rows="3" placeholder="Tekst…">${esc(item.text)}</textarea>
+        <div class="item-actions">
+          <button class="item-btn" title="Instellingen" onclick="toggleItemSettings(${i})">⚙</button>
+          ${items.length > 1 ? `<button class="item-btn" title="Verwijder" onclick="removeItem(${i})">×</button>` : ''}
+        </div>
+      </div>
+      <div class="item-settings${item.open ? ' open' : ''}">
+        <div class="ctrl">
+          <span class="ctrl-label">Lettergrootte</span>
+          <input type="range" min="40" max="180" value="${item.fs}" oninput="updateItem(${i},'fs',+this.value);this.nextElementSibling.textContent=this.value+'px'">
+          <span class="ctrl-val">${item.fs}px</span>
+        </div>
+        <div class="ctrl">
+          <span class="ctrl-label">Zijmarge</span>
+          <input type="range" min="0" max="60" value="${item.mg}" oninput="updateItem(${i},'mg',+this.value);this.nextElementSibling.textContent=this.value+'px'">
+          <span class="ctrl-val">${item.mg}px</span>
+        </div>
+        <div class="ctrl">
+          <span class="ctrl-label">Regelafstand</span>
+          <input type="range" min="0" max="50" value="${item.gap}" oninput="updateItem(${i},'gap',+this.value);this.nextElementSibling.textContent=this.value+'px'">
+          <span class="ctrl-val">${item.gap}px</span>
+        </div>
+        <div class="ctrl" style="margin-top:.5rem">
+          <span class="ctrl-label">Balk</span>
+          <input type="color" value="${item.bc}" oninput="updateItem(${i},'bc',this.value);this.nextElementSibling.textContent=this.value">
+          <span class="color-hex">${item.bc}</span>
+        </div>
+        <div class="ctrl">
+          <span class="ctrl-label">Tekst</span>
+          <input type="color" value="${item.tc}" oninput="updateItem(${i},'tc',this.value);this.nextElementSibling.textContent=this.value">
+          <span class="color-hex">${item.tc}</span>
+        </div>
+        <button onclick="invertItemColors(${i})" style="margin-top:.6rem;background:none;border:none;color:var(--muted);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:0">&#8645; Inverteer</button>
+      </div>`;
+    const ta = card.querySelector('.item-text');
+    ta.addEventListener('focus', () => setActive(i));
+    ta.addEventListener('input', () => {
+      items[i].text = ta.value;
+      if (i === activeIdx) {
+        document.querySelectorAll('.canvas-edit-overlay').forEach(o => o.value = ta.value);
+        generate();
+      }
+    });
+    list.appendChild(card);
+  });
+}
+
+function setActive(i) {
+  if (activeIdx === i) return;
+  activeIdx = i;
+  // Alleen de active-klasse wisselen, geen volledige re-render
+  document.querySelectorAll('#itemList .item-card').forEach((card, idx) => {
+    card.classList.toggle('active', idx === i);
+  });
+  document.querySelectorAll('.canvas-edit-overlay').forEach(o => o.value = items[i].text);
+  generate();
+}
+function addItem() {
+  const text = DEFAULT_TEXTS[items.length % DEFAULT_TEXTS.length];
+  items.push({ ...DEFAULTS, text, open: false });
+  activeIdx = items.length - 1;
+  renderItemList();
+  document.querySelectorAll('.canvas-edit-overlay').forEach(o => o.value = text);
+  generate();
+  updateBtnLabels();
+  setTimeout(() => G('itemList').children[activeIdx]?.querySelector('.item-text')?.focus(), 50);
+}
+function removeItem(i) {
+  items.splice(i, 1);
+  if (activeIdx >= items.length) activeIdx = items.length - 1;
+  renderItemList();
+  generate();
+  updateBtnLabels();
+}
+function toggleItemSettings(i) {
+  items[i].open = !items[i].open;
+  renderItemList();
+}
+function updateItem(i, key, val) {
+  items[i][key] = val;
+  if (i === activeIdx) generate();
+}
+function invertItemColors(i) {
+  [items[i].bc, items[i].tc] = [items[i].tc, items[i].bc];
+  renderItemList();
+  if (i === activeIdx) generate();
 }
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -204,16 +326,19 @@ function drawAt(canvas, w, h, s, sc) {
   const cy   = Math.round((canvas.height - totH) / 2);
 
   ctx.font = `bold ${fs}px OSGC, sans-serif`;
-  ctx.textBaseline = 'middle';
+  ctx.textBaseline = 'alphabetic';
   ctx.textAlign    = 'center';
 
   lines.forEach((line, i) => {
     const hash     = hashes[i];
     const rotation = getBaseRotation(hash);
-    const tw    = ctx.measureText(line).width;
+    const m     = ctx.measureText(line);
+    const tw    = m.width;
     const bw    = Math.ceil(tw + mg * 2);
     const barCx = canvas.width / 2;
     const barCy = cy + i * (bh + gap) + bh / 2;
+    // Align text visually centred on the bar using actual glyph bounds
+    const textY = barCy + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
 
     ctx.save();
     ctx.translate(barCx, barCy);
@@ -223,16 +348,66 @@ function drawAt(canvas, w, h, s, sc) {
     ctx.restore();
 
     ctx.fillStyle = s.tc;
-    ctx.fillText(line, barCx, barCy);
+    ctx.fillText(line, barCx, textY);
   });
+}
+
+function activeFmts() {
+  return FMTS.filter(f => G('chk' + f.id) && G('chk' + f.id).checked);
+}
+
+function onFmtChange() {
+  FMTS.forEach(f => {
+    const box = G('box' + f.id);
+    const chk = G('chk' + f.id);
+    if (box && chk) box.classList.toggle('hidden', !chk.checked);
+  });
+  updateBtnLabels();
+  generate();
+}
+
+function updateBtnLabels() {
+  const nFmt  = activeFmts().length;
+  const nItems = (typeof items !== 'undefined') ? items.filter(it => it.text.trim()).length : 0;
+  const total = nItems * nFmt;
+  const btnR = G('btnRenderAll');
+  const btnD = G('btnDownload');
+  if (btnR) btnR.textContent = `↓ Render alles${total > 0 ? ' (' + total + ' PNG' + (total !== 1 ? "'s" : '') + ')' : ''}`;
+  if (btnD) btnD.textContent = `↓ Download huidige balk${nFmt > 0 ? ' (' + nFmt + ' PNG' + (nFmt !== 1 ? "'s" : '') + ')' : ''}`;
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  const btn = G('themeBtn');
+  if (btn) btn.textContent = isLight ? '☾ Donker' : '☼ Licht';
+  try { localStorage.setItem('uvnl_theme', isLight ? 'light' : 'dark'); } catch(e){}
 }
 
 let _saveTimer;
 function generate() {
   const s = getSettings();
-  FMTS.forEach(f => drawAt(G('c' + f.id), f.w, f.h, s));
+  activeFmts().forEach(f => drawAt(G('c' + f.id), f.w, f.h, s));
+  updateBtnLabels();
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => saveEntry(s), 1200);
+}
+
+function addEditOverlays() {
+  FMTS.forEach(f => {
+    const checker = G('c' + f.id).parentElement;
+    const overlay = document.createElement('textarea');
+    overlay.className = 'canvas-edit-overlay';
+    overlay.value = items[activeIdx].text;
+    overlay.addEventListener('input', () => {
+      items[activeIdx].text = overlay.value;
+      document.querySelectorAll('.canvas-edit-overlay').forEach(o => { if (o !== overlay) o.value = overlay.value; });
+      const activeCard = G('itemList').children[activeIdx];
+      if (activeCard) activeCard.querySelector('.item-text').value = overlay.value;
+      generate();
+    });
+    checker.appendChild(overlay);
+  });
 }
 
 // ── PNG download ──────────────────────────────────────────────
@@ -240,7 +415,7 @@ function dlFmt(id, w, h) {
   const s   = getSettings();
   const off = document.createElement('canvas');
   drawAt(off, w, h, s); // static
-  const name = (G('txtInput').value.split('\n')[0] || 'TITEL')
+  const name = (items[activeIdx].text.split('\n')[0] || 'TITEL')
     .toUpperCase().replace(/\s+/g,'_').replace(/[^A-Z0-9_]/g,'').slice(0, 30);
   const a = document.createElement('a');
   a.download = `UVNL_${name}_${w}x${h}.png`;
@@ -249,8 +424,33 @@ function dlFmt(id, w, h) {
 }
 
 function downloadAll() {
-  FMTS.forEach((f, i) => setTimeout(() => dlFmt(f.id, f.w, f.h), i * 200));
-  toast('3 PNG-bestanden worden gedownload...');
+  const fmts = activeFmts();
+  fmts.forEach((f, i) => setTimeout(() => dlFmt(f.id, f.w, f.h), i * 200));
+  toast(`${fmts.length} PNG-bestand${fmts.length !== 1 ? 'en' : ''} worden gedownload...`);
+}
+
+function renderAll() {
+  let delay = 0;
+  let count = 0;
+  items.forEach(item => {
+    const s = itemToSettings(item);
+    if (!s.lines.length) return;
+    FMTS.forEach(f => {
+      setTimeout(() => {
+        const off = document.createElement('canvas');
+        drawAt(off, f.w, f.h, s);
+        const name = (item.text.split('\n')[0] || 'TITEL')
+          .toUpperCase().replace(/\s+/g,'_').replace(/[^A-Z0-9_]/g,'').slice(0, 30);
+        const a = document.createElement('a');
+        a.download = `UVNL_${name}_${f.w}x${f.h}.png`;
+        a.href = off.toDataURL('image/png');
+        a.click();
+      }, delay);
+      delay += 300;
+    });
+    count++;
+  });
+  toast(`${count * 3} PNG-bestanden worden gedownload...`);
 }
 
 // ── Gallery ───────────────────────────────────────────────────
@@ -283,12 +483,9 @@ function renderGallery() {
   });
 }
 function loadEntry(e) {
-  G('txtInput').value = e.lines.join('\n');
-  G('rFs').value = e.fs; G('vFs').textContent = e.fs;
-  G('rMg').value = e.mg; G('vMg').textContent = e.mg;
-  G('rGap').value = e.gap; G('vGap').textContent = e.gap;
-  G('cBar').value = e.bc; G('hBar').textContent = e.bc;
-  G('cTxt').value = e.tc; G('hTxt').textContent = e.tc;
+  items[activeIdx] = { text: e.lines.join('\n'), fs: e.fs, mg: e.mg, gap: e.gap, bc: e.bc, tc: e.tc, open: items[activeIdx].open };
+  renderItemList();
+  document.querySelectorAll('.canvas-edit-overlay').forEach(o => o.value = items[activeIdx].text);
   generate();
 }
 
@@ -296,10 +493,11 @@ function loadEntry(e) {
 function applyUrlParams() {
   const p = new URLSearchParams(location.search);
   if (!p.has('t')) return;
-  G('txtInput').value = decodeURIComponent(p.get('t').replace(/\+/g,' '));
-  if (p.has('fs')) { const v = +p.get('fs'); if (v>=40&&v<=180) { G('rFs').value=v; G('vFs').textContent=v; } }
+  items[activeIdx].text = decodeURIComponent(p.get('t').replace(/\+/g,' '));
+  if (p.has('fs')) { const v = +p.get('fs'); if (v>=40&&v<=180) items[activeIdx].fs = v; }
+  renderItemList();
   generate();
-  if (p.get('dl') === '1') setTimeout(downloadAll, 900);
+  if (p.get('dl') === '1') setTimeout(renderAll, 900);
 }
 
 // ── Toast ─────────────────────────────────────────────────────
