@@ -436,7 +436,15 @@ function toggleTheme() {
 let _saveTimer;
 function generate() {
   const s = getSettings();
-  activeFmts().forEach(f => drawAt(G('c' + f.id), f.w, f.h, s));
+  const dpr = window.devicePixelRatio || 1;
+  activeFmts().forEach(f => {
+    const el = G('c' + f.id);
+    const displayW = el.offsetWidth || el.clientWidth || f.w;
+    const sc = (displayW * dpr) / f.w;
+    drawAt(el, f.w, f.h, s, sc);
+    el.style.width  = displayW + 'px';
+    el.style.height = 'auto';
+  });
   updateBtnLabels();
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => saveEntry(s), 1200);
