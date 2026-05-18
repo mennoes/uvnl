@@ -351,7 +351,10 @@ function lineHash(line) {
   return [...line].reduce((a, c) => Math.imul(a, 31) + c.charCodeAt(0) | 0, 0);
 }
 
-function getBaseRotation(hash) { return 0; }
+function getBaseRotation(hash) {
+  const r = (Math.abs(hash) % 1000) / 1000;
+  return (r * 2 - 1) * 3;
+}
 
 // ── Core draw ─────────────────────────────────────────────────
 function drawAt(canvas, w, h, s, sc) {
@@ -386,17 +389,16 @@ function drawAt(canvas, w, h, s, sc) {
     const barCx = canvas.width / 2;
     const barCy = cy + i * (bh + gap) + bh / 2;
     // Align text visually centred on the bar using actual glyph bounds
-    const textY = barCy + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
+    const textOffY = (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
 
     ctx.save();
     ctx.translate(barCx, barCy);
     ctx.rotate(rotation * Math.PI / 180);
     ctx.fillStyle = s.bc;
     ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
-    ctx.restore();
-
     ctx.fillStyle = s.tc;
-    ctx.fillText(line, barCx, textY);
+    ctx.fillText(line, 0, textOffY);
+    ctx.restore();
   });
 }
 
