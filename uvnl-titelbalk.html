@@ -388,8 +388,12 @@ function drawAt(canvas, w, h, s, sc) {
   const cy   = Math.round((canvas.height - totH) / 2);
 
   ctx.font = `bold ${fs}px OSGC, sans-serif`;
-  ctx.textBaseline = 'middle';
+  ctx.textBaseline = 'alphabetic';
   ctx.textAlign    = 'center';
+
+  // OSGC cap-height ratio (empirisch). Gebruikt als fallback wanneer
+  // actualBoundingBox geen bruikbare waarde geeft (oude Safari etc).
+  const OSGC_CAP_RATIO = 0.72;
 
   lines.forEach((line, i) => {
     const hash     = hashes[i];
@@ -400,6 +404,13 @@ function drawAt(canvas, w, h, s, sc) {
     const barCx = canvas.width / 2;
     const barCy = cy + i * (bh + gap) + bh / 2;
 
+    // Visueel midden van de glyphs op barCy zetten.
+    const asc = m.actualBoundingBoxAscent;
+    const dsc = m.actualBoundingBoxDescent;
+    const usableAsc = (typeof asc === 'number' && asc > 0) ? asc : fs * OSGC_CAP_RATIO;
+    const usableDsc = (typeof dsc === 'number' && dsc >= 0) ? dsc : 0;
+    const baselineY = barCy + (usableAsc - usableDsc) / 2;
+
     ctx.save();
     ctx.translate(barCx, barCy);
     ctx.rotate(rotation * Math.PI / 180);
@@ -408,7 +419,7 @@ function drawAt(canvas, w, h, s, sc) {
     ctx.restore();
 
     ctx.fillStyle = s.tc;
-    ctx.fillText(line, barCx, barCy);
+    ctx.fillText(line, barCx, baselineY);
   });
 }
 
