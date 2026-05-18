@@ -215,9 +215,6 @@ function renderItemList() {
           ${items.length > 1 ? `<button class="item-btn" title="Verwijder" onclick="removeItem(${i})">×</button>` : ''}
         </div>
       </div>
-      <div class="palette-group" style="padding:0 .75rem .75rem">
-        ${UVNL_COLORS.map(c=>`<button class="swatch" style="background:${c.hex}" title="${c.name} · ${c.hex}" onclick="applySwatchTo(${i},'bc','${c.hex}')"></button>`).join('')}
-      </div>
       <div class="item-settings${item.open ? ' open' : ''}">
         <div class="ctrl">
           <span class="ctrl-label">Lettergrootte</span>
@@ -243,6 +240,9 @@ function renderItemList() {
           <span class="ctrl-label">Tekst</span>
           <input type="text" class="hex-input" value="${item.tc}" maxlength="7" spellcheck="false" oninput="syncHex(this,${i},'tc')">
           <input type="color" value="${item.tc}" oninput="syncColor(this,${i},'tc')">
+        </div>
+        <div class="palette-group" style="margin:.6rem 0 .25rem">
+          ${UVNL_COLORS.map(c=>`<button class="swatch" style="background:${c.hex}" title="${c.name} · ${c.hex}" onclick="applySwatchTo(${i},'bc','${c.hex}')"></button>`).join('')}
         </div>
         <button onclick="invertItemColors(${i})" style="margin-top:.6rem;background:none;border:none;color:var(--muted);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:0">&#8645; Inverteer</button>
       </div>`;
