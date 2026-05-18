@@ -47,6 +47,9 @@ textarea:focus{border-color:var(--accent)}
 .palette-group{display:flex;flex-wrap:wrap;gap:.35rem}
 .swatch{width:22px;height:22px;border-radius:4px;border:1px solid rgba(255,255,255,.1);cursor:pointer;padding:0;transition:transform .1s,box-shadow .1s}
 .swatch:hover{transform:scale(1.2);box-shadow:0 0 0 2px var(--lavender)}
+.btn-pipet{background:var(--input-bg);border:1px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;transition:border-color .12s,color .12s;flex-shrink:0}
+.btn-pipet:hover{border-color:var(--lavender);color:var(--fg)}
+.btn-pipet svg{display:block;width:14px;height:14px}
 .preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--gap)}
 .preview-box.hidden{display:none}
 .fmt-checks{display:flex;flex-direction:column;gap:.55rem;margin-top:.3rem}
@@ -235,11 +238,13 @@ function renderItemList() {
           <span class="ctrl-label">Balk</span>
           <input type="text" class="hex-input" value="${item.bc}" maxlength="7" spellcheck="false" oninput="syncHex(this,${i},'bc')">
           <input type="color" value="${item.bc}" oninput="syncColor(this,${i},'bc')">
+          <button class="btn-pipet" title="Pipet — kleur uit scherm pakken" onclick="eyeDropperPick(${i},'bc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 22 1-4 14-14 3 3L6 21z"/><path d="m14 8 4 4"/></svg></button>
         </div>
         <div class="ctrl">
           <span class="ctrl-label">Tekst</span>
           <input type="text" class="hex-input" value="${item.tc}" maxlength="7" spellcheck="false" oninput="syncHex(this,${i},'tc')">
           <input type="color" value="${item.tc}" oninput="syncColor(this,${i},'tc')">
+          <button class="btn-pipet" title="Pipet — kleur uit scherm pakken" onclick="eyeDropperPick(${i},'tc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 22 1-4 14-14 3 3L6 21z"/><path d="m14 8 4 4"/></svg></button>
         </div>
         <div class="palette-group" style="margin:.6rem 0 .25rem">
           ${UVNL_COLORS.map(c=>`<button class="swatch" style="background:${c.hex}" title="${c.name} · ${c.hex}" onclick="applySwatchTo(${i},'bc','${c.hex}')"></button>`).join('')}
@@ -314,6 +319,18 @@ function applySwatchTo(i, key, hex) {
   updateItem(i, key, hex);
   renderItemList();
   if (i === activeIdx) generate();
+}
+async function eyeDropperPick(i, key) {
+  if (!window.EyeDropper) {
+    toast('Pipet werkt alleen in Chrome/Edge op desktop');
+    return;
+  }
+  try {
+    const { sRGBHex } = await new EyeDropper().open();
+    updateItem(i, key, sRGBHex);
+    renderItemList();
+    if (i === activeIdx) generate();
+  } catch (e) { /* user cancelled */ }
 }
 function invertItemColors(i) {
   [items[i].bc, items[i].tc] = [items[i].tc, items[i].bc];
