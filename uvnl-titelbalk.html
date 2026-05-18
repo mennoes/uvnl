@@ -351,11 +351,7 @@ function lineHash(line) {
   return [...line].reduce((a, c) => Math.imul(a, 31) + c.charCodeAt(0) | 0, 0);
 }
 
-// Basisrotatie per balk: -1.5 tot +1.5 graden
-function getBaseRotation(hash) {
-  const r = (Math.abs(hash) % 1000) / 1000;
-  return (r * 2 - 1) * 3;
-}
+function getBaseRotation(hash) { return 0; }
 
 // ── Core draw ─────────────────────────────────────────────────
 function drawAt(canvas, w, h, s, sc) {
