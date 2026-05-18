@@ -42,8 +42,8 @@ textarea:focus{border-color:var(--accent)}
 .item-settings .ctrl{margin-top:.55rem}
 .item-colors{padding:0 .75rem .75rem;border-top:1px solid var(--border);display:none}
 .item-colors.open{display:block}
-.preset-row{display:grid;grid-template-columns:repeat(6,1fr);gap:.4rem;margin-top:.7rem}
-.preset{aspect-ratio:1;border:1px solid var(--border);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.68rem;letter-spacing:.04em;transition:transform .1s,border-color .12s;overflow:hidden;line-height:1;padding:0}
+.preset-row{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem}
+.preset{aspect-ratio:2/1;border:1px solid var(--border);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;letter-spacing:.04em;transition:transform .1s,border-color .12s;overflow:hidden;line-height:1;padding:0}
 .preset:hover{border-color:var(--lavender);transform:scale(1.06)}
 .preset:active{transform:scale(.95)}
 .color-pickers{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.7rem}
@@ -171,12 +171,8 @@ const FMTS = [{id:'916',w:1080,h:1920},{id:'169',w:1920,h:1080},{id:'11',w:1080,
 // ── State ─────────────────────────────────────────────────────
 const DEFAULTS = { fs: 125, mg: 15, gap: 5, bc: '#004B36', tc: '#ffffff' };
 const COLOR_PRESETS = [
-  { name: 'UvNL groen op wit', bc: '#004B36', tc: '#ffffff' },
-  { name: 'Wit op UvNL groen', bc: '#ffffff', tc: '#004B36' },
-  { name: 'Zwart op wit',      bc: '#000000', tc: '#ffffff' },
-  { name: 'Wit op zwart',      bc: '#ffffff', tc: '#000000' },
-  { name: 'Lavendel op zwart', bc: '#D6ACFF', tc: '#000000' },
-  { name: 'Geel op zwart',     bc: '#FFE600', tc: '#000000' },
+  { name: 'UvNL groen op wit',     bc: '#004B36', tc: '#ffffff' },
+  { name: 'Lavendel op UvNL groen', bc: '#D6ACFF', tc: '#004B36' },
 ];
 const DEFAULT_TEXTS = [
   'Deze truc laat je 20% meer onthouden',
