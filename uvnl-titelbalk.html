@@ -166,6 +166,53 @@ const G = id => document.getElementById(id);
 
 const FMTS = [{id:'916',w:1080,h:1920},{id:'169',w:1920,h:1080},{id:'11',w:1080,h:1080}];
 
+// ── Brand-switch NL/VL ────────────────────────────────────────
+let BRAND = 'NL';
+const brandLabel  = () => BRAND === 'VL' ? 'UvVL' : 'UvNL';
+const brandPrefix = () => BRAND === 'VL' ? 'UVVL' : 'UVNL';
+
+function applyBrand() {
+  document.title = `${brandLabel()} Titelbalk Generator`;
+  const h1 = document.querySelector('h1');
+  if (h1 && h1.firstChild && h1.firstChild.nodeType === Node.TEXT_NODE) {
+    h1.firstChild.textContent = `${brandLabel()} Titelbalk Generator `;
+  }
+}
+
+async function detectBrand() {
+  // 1. URL override wint altijd
+  const land = new URLSearchParams(location.search).get('land');
+  if (land) {
+    const up = land.toUpperCase();
+    if (up === 'NL' || up === 'VL' || up === 'BE') {
+      BRAND = up === 'BE' ? 'VL' : up;
+      applyBrand();
+      return;
+    }
+  }
+  // 2. Cache uit vorige bezoek (voorkomt flash)
+  try {
+    const cached = localStorage.getItem('uvnl_brand');
+    if (cached === 'NL' || cached === 'VL') {
+      BRAND = cached;
+      applyBrand();
+    }
+  } catch (e) {}
+  // 3. Verse geo-detectie via ipapi.co
+  try {
+    const r = await fetch('https://ipapi.co/json/', {cache: 'no-store'});
+    if (!r.ok) return;
+    const j = await r.json();
+    const detected = j.country_code === 'BE' ? 'VL' : 'NL';
+    if (detected !== BRAND) {
+      BRAND = detected;
+      applyBrand();
+    }
+    try { localStorage.setItem('uvnl_brand', detected); } catch (e) {}
+  } catch (e) { /* geen netwerk → blijft NL of cache */ }
+}
+detectBrand();
+
 // ── UvNL kleurenpalet ─────────────────────────────────────────
 const UVNL_COLORS = [
   {name:'Varsity Green',  hex:'#004B36'},
@@ -499,7 +546,7 @@ function dlFmt(id, w, h) {
   const name = (items[activeIdx].text.split('\n')[0] || 'TITEL')
     .toUpperCase().replace(/\s+/g,'_').replace(/[^A-Z0-9_]/g,'').slice(0, 30);
   const a = document.createElement('a');
-  a.download = `UVNL_${name}_${w}x${h}.png`;
+  a.download = `${brandPrefix()}_${name}_${w}x${h}.png`;
   a.href = off.toDataURL('image/png');
   a.click();
 }
@@ -523,7 +570,7 @@ function renderAll() {
         const name = (item.text.split('\n')[0] || 'TITEL')
           .toUpperCase().replace(/\s+/g,'_').replace(/[^A-Z0-9_]/g,'').slice(0, 30);
         const a = document.createElement('a');
-        a.download = `UVNL_${name}_${f.w}x${f.h}.png`;
+        a.download = `${brandPrefix()}_${name}_${f.w}x${f.h}.png`;
         a.href = off.toDataURL('image/png');
         a.click();
       }, delay);
