@@ -47,9 +47,6 @@ textarea:focus{border-color:var(--accent)}
 .palette-group{display:flex;flex-wrap:wrap;gap:.35rem}
 .swatch{width:22px;height:22px;border-radius:4px;border:1px solid rgba(255,255,255,.1);cursor:pointer;padding:0;transition:transform .1s,box-shadow .1s}
 .swatch:hover{transform:scale(1.2);box-shadow:0 0 0 2px var(--lavender)}
-.swatch-target-btns{display:flex;gap:.25rem}
-.swatch-target{background:none;border:1px solid var(--border);border-radius:3px;color:var(--muted);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:.15rem .4rem;cursor:pointer;transition:border-color .12s,color .12s}
-.swatch-target.active{border-color:var(--accent);color:var(--fg);}
 .preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--gap)}
 .preview-box.hidden{display:none}
 .fmt-checks{display:flex;flex-direction:column;gap:.55rem;margin-top:.3rem}
@@ -182,7 +179,7 @@ const UVNL_COLORS = [
 ];
 
 // ── State ─────────────────────────────────────────────────────
-const DEFAULTS = { fs: 125, mg: 15, gap: 5, bc: '#004B36', tc: '#ffffff', swatchTarget: 'bc' };
+const DEFAULTS = { fs: 125, mg: 15, gap: 5, bc: '#004B36', tc: '#ffffff' };
 const DEFAULT_TEXTS = [
   'Deze truc laat je 20% meer onthouden',
   'Zo word je 2x slimmer',
@@ -218,6 +215,9 @@ function renderItemList() {
           ${items.length > 1 ? `<button class="item-btn" title="Verwijder" onclick="removeItem(${i})">×</button>` : ''}
         </div>
       </div>
+      <div class="palette-group" style="padding:0 .75rem .75rem">
+        ${UVNL_COLORS.map(c=>`<button class="swatch" style="background:${c.hex}" title="${c.name} · ${c.hex}" onclick="applySwatchTo(${i},'bc','${c.hex}')"></button>`).join('')}
+      </div>
       <div class="item-settings${item.open ? ' open' : ''}">
         <div class="ctrl">
           <span class="ctrl-label">Lettergrootte</span>
@@ -236,21 +236,15 @@ function renderItemList() {
         </div>
         <div class="ctrl" style="margin-top:.5rem">
           <span class="ctrl-label">Balk</span>
-          <input type="color" value="${item.bc}" oninput="syncColor(this,${i},'bc')">
           <input type="text" class="hex-input" value="${item.bc}" maxlength="7" spellcheck="false" oninput="syncHex(this,${i},'bc')">
-        </div>
-        <div class="palette-group" style="margin:.4rem 0 .75rem">
-          ${UVNL_COLORS.map(c=>`<button class="swatch" style="background:${c.hex}" title="${c.name} · ${c.hex}" onclick="applySwatchTo(${i},'bc','${c.hex}')"></button>`).join('')}
+          <input type="color" value="${item.bc}" oninput="syncColor(this,${i},'bc')">
         </div>
         <div class="ctrl">
           <span class="ctrl-label">Tekst</span>
-          <input type="color" value="${item.tc}" oninput="syncColor(this,${i},'tc')">
           <input type="text" class="hex-input" value="${item.tc}" maxlength="7" spellcheck="false" oninput="syncHex(this,${i},'tc')">
+          <input type="color" value="${item.tc}" oninput="syncColor(this,${i},'tc')">
         </div>
-        <div class="palette-group" style="margin:.4rem 0 .5rem">
-          ${UVNL_COLORS.map(c=>`<button class="swatch" style="background:${c.hex}" title="${c.name} · ${c.hex}" onclick="applySwatchTo(${i},'tc','${c.hex}')"></button>`).join('')}
-        </div>
-        <button onclick="invertItemColors(${i})" style="margin-top:.25rem;background:none;border:none;color:var(--muted);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:0">&#8645; Inverteer</button>
+        <button onclick="invertItemColors(${i})" style="margin-top:.6rem;background:none;border:none;color:var(--muted);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:0">&#8645; Inverteer</button>
       </div>`;
     const ta = card.querySelector('.item-text');
     ta.addEventListener('focus', () => setActive(i));
@@ -303,7 +297,7 @@ function updateItem(i, key, val) {
 function syncColor(picker, i, key) {
   const val = picker.value;
   updateItem(i, key, val);
-  const hex = picker.nextElementSibling;
+  const hex = picker.previousElementSibling;
   if (hex) hex.value = val;
 }
 function syncHex(input, i, key) {
@@ -312,7 +306,7 @@ function syncHex(input, i, key) {
   input.value = val.startsWith('#') ? val : input.value;
   if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
     updateItem(i, key, val);
-    const picker = input.previousElementSibling;
+    const picker = input.nextElementSibling;
     if (picker) picker.value = val;
   }
 }
