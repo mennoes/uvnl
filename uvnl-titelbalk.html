@@ -389,16 +389,17 @@ function drawAt(canvas, w, h, s, sc) {
     const barCx = canvas.width / 2;
     const barCy = cy + i * (bh + gap) + bh / 2;
     // Align text visually centred on the bar using actual glyph bounds
-    const textOffY = (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
+    const textY = barCy + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
 
     ctx.save();
     ctx.translate(barCx, barCy);
     ctx.rotate(rotation * Math.PI / 180);
     ctx.fillStyle = s.bc;
     ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
-    ctx.fillStyle = s.tc;
-    ctx.fillText(line, 0, textOffY);
     ctx.restore();
+
+    ctx.fillStyle = s.tc;
+    ctx.fillText(line, barCx, textY);
   });
 }
 
@@ -448,7 +449,9 @@ function addEditOverlays() {
     const checker = G('c' + f.id).parentElement;
     const overlay = document.createElement('textarea');
     overlay.className = 'canvas-edit-overlay';
-    overlay.value = items[activeIdx].text;
+    overlay.value = '';
+    overlay.addEventListener('focus', () => { overlay.value = items[activeIdx].text; });
+    overlay.addEventListener('blur',  () => { overlay.value = ''; });
     overlay.addEventListener('input', () => {
       items[activeIdx].text = overlay.value;
       document.querySelectorAll('.canvas-edit-overlay').forEach(o => { if (o !== overlay) o.value = overlay.value; });
