@@ -100,6 +100,7 @@ textarea:focus{border-color:var(--accent)}
       <div class="card-label">Formaten</div>
       <div class="fmt-checks">
         <label class="fmt-check"><input type="checkbox" id="chk916" checked onchange="onFmtChange()"><span>9:16</span><small>1080×1920</small></label>
+        <label class="fmt-check"><input type="checkbox" id="chk34" onchange="onFmtChange()"><span>3:4</span><small>1080×1440</small></label>
         <label class="fmt-check"><input type="checkbox" id="chk169" onchange="onFmtChange()"><span>16:9</span><small>1920×1080</small></label>
         <label class="fmt-check"><input type="checkbox" id="chk11" onchange="onFmtChange()"><span>1:1</span><small>1080×1080</small></label>
       </div>
@@ -115,6 +116,13 @@ textarea:focus{border-color:var(--accent)}
         <div class="checker"><canvas id="c916" width="1080" height="1920"></canvas></div>
         <div class="btn-row">
           <button class="btn-dl" onclick="dlFmt('916',1080,1920)">&#8595; PNG</button>
+        </div>
+      </div>
+      <div class="preview-box hidden" id="box34">
+        <div class="preview-head"><h3>3:4</h3><small>1080 &times; 1440</small></div>
+        <div class="checker"><canvas id="c34" width="1080" height="1440"></canvas></div>
+        <div class="btn-row">
+          <button class="btn-dl" onclick="dlFmt('34',1080,1440)">&#8595; PNG</button>
         </div>
       </div>
       <div class="preview-box hidden" id="box169">
@@ -169,7 +177,7 @@ Promise.all([ff.load(), ff2.load()]).then(([f1, f2]) => {
 
 const G = id => document.getElementById(id);
 
-const FMTS = [{id:'916',w:1080,h:1920},{id:'169',w:1920,h:1080},{id:'11',w:1080,h:1080}];
+const FMTS = [{id:'916',w:1080,h:1920},{id:'34',w:1080,h:1440},{id:'169',w:1920,h:1080},{id:'11',w:1080,h:1080}];
 
 // ── Brand-switch NL/VL ────────────────────────────────────────
 let BRAND = 'NL';
