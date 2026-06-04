@@ -287,21 +287,6 @@ function renderItemList() {
             <option value="condensed"${(item.style||'bold')==='condensed'?' selected':''}>Condensed FULL CAPS</option>
           </select>
         </div>
-        <div class="ctrl">
-          <span class="ctrl-label">Lettergrootte</span>
-          <input type="range" min="40" max="180" value="${item.fs}" oninput="updateItem(${i},'fs',+this.value);this.nextElementSibling.textContent=this.value+'px'">
-          <span class="ctrl-val">${item.fs}px</span>
-        </div>
-        <div class="ctrl">
-          <span class="ctrl-label">Zijmarge</span>
-          <input type="range" min="0" max="60" value="${item.mg}" oninput="updateItem(${i},'mg',+this.value);this.nextElementSibling.textContent=this.value+'px'">
-          <span class="ctrl-val">${item.mg}px</span>
-        </div>
-        <div class="ctrl">
-          <span class="ctrl-label">Regelafstand</span>
-          <input type="range" min="0" max="50" value="${item.gap}" oninput="updateItem(${i},'gap',+this.value);this.nextElementSibling.textContent=this.value+'px'">
-          <span class="ctrl-val">${item.gap}px</span>
-        </div>
         <div class="ctrl" style="margin-top:.5rem">
           <span class="ctrl-label">Balk</span>
           <input type="text" class="hex-input" value="${item.bc}" maxlength="7" spellcheck="false" oninput="syncHex(this,${i},'bc')">
