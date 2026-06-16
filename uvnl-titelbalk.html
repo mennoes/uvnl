@@ -51,7 +51,10 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font-sans);font-size
 h1{font-family:var(--font-display);font-size:1.6rem;font-weight:700;letter-spacing:-.005em;text-transform:uppercase;color:var(--uvnl-green);margin-bottom:1.5rem;line-height:1}
 h1 span{font-family:var(--font-sans);color:var(--uvnl-grey-700);font-weight:400;letter-spacing:0;text-transform:none;font-size:.95rem}
 
-.layout{display:grid;grid-template-columns:300px 1fr;gap:1.5rem;max-width:1400px;margin:0 auto}
+.page{max-width:1400px;margin:0 auto}
+.page-head{display:flex;align-items:center;gap:.55rem;margin-bottom:1.5rem}
+.brandmark{flex-shrink:0;display:block;height:1.6rem;width:auto;color:var(--uvnl-green)}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:1.5rem}
 .sidebar{display:flex;flex-direction:column;gap:var(--gap)}
 
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:1.25rem;box-shadow:var(--shadow-card)}
@@ -151,9 +154,11 @@ textarea:focus{border-color:var(--uvnl-green)}
 </head>
 <body>
 
-<div style="margin-bottom:1.5rem">
-  <h1>UvNL Titelbalk Generator <span>&#8212; titelbalken voor video &amp; socials</span></h1>
-</div>
+<div class="page">
+<header class="page-head">
+  <svg class="brandmark" viewBox="0 0 156 140" aria-label="UvNL"><path fill="currentColor" d="M0 0H44V92H111V0H156V138H112V98H105.629C102.676 121.678 82.4777 140 52 140C22.4903 140 0 117.5 0 85.5V0Z"/></svg>
+  <h1>Titelbalk Generator <span>&#8212; titelbalken voor video &amp; socials</span></h1>
+</header>
 
 <div class="layout">
   <div class="sidebar">
@@ -210,6 +215,7 @@ textarea:focus{border-color:var(--uvnl-green)}
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <div class="status-bar" id="statusBar"></div>
