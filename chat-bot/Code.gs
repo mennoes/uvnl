@@ -201,9 +201,19 @@ function renderViaScreenshotOne(targetUrl, w, h) {
 }
 
 function getOrCreateBotFolder() {
-  const name = 'UvNL Titelbalk Bot — renders';
-  const it = DriveApp.getFoldersByName(name);
-  return it.hasNext() ? it.next() : DriveApp.createFolder(name);
+  // drive.file scope mag geen Drive doorzoeken (getFoldersByName),
+  // wel files/folders aanmaken en daarna ophalen via ID. We cachen
+  // de folder-ID in Script Properties zodat we 'm niet hoeven te
+  // zoeken.
+  const props = PropertiesService.getScriptProperties();
+  const cachedId = props.getProperty('BOT_FOLDER_ID');
+  if (cachedId) {
+    try { return DriveApp.getFolderById(cachedId); }
+    catch (e) { /* folder weg/onbereikbaar -> opnieuw aanmaken */ }
+  }
+  const folder = DriveApp.createFolder('UvNL Titelbalk Bot — renders');
+  props.setProperty('BOT_FOLDER_ID', folder.getId());
+  return folder;
 }
 
 // ── Chat-replies ─────────────────────────────────────────────
