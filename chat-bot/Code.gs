@@ -172,7 +172,7 @@ function renderViaScreenshotOne(targetUrl, w, h) {
     omit_background: 'true',
     block_ads: 'true',
     block_cookie_banners: 'true',
-    wait_until: 'network_idle',
+    wait_until: 'networkidle0',
     delay: '1',
     cache: 'true',
     cache_ttl: '14400',
