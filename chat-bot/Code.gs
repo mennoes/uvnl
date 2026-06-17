@@ -28,6 +28,47 @@ const FORMATS = {
 };
 
 // ── Chat events ──────────────────────────────────────────────
+// Twee ingangen:
+//  1. Apps Script Chat callbacks (onMessage / onAddToSpace) — gebruikt
+//     wanneer Chat API connection-mode = "Apps Script project".
+//  2. doPost — gebruikt wanneer Chat API connection-mode = "HTTP endpoint"
+//     en POST'st events naar de Web App URL.
+// doGet bestaat alleen om GET-pings (validatie, browser-bezoek) netjes
+// te beantwoorden in plaats van te crashen.
+
+function doGet(e) {
+  return ContentService.createTextOutput(
+    'UvNL Titelbalk bot is online. Gebruik me via Google Chat — niet via deze URL.'
+  ).setMimeType(ContentService.MimeType.TEXT);
+}
+
+function doPost(e) {
+  let event;
+  try {
+    event = JSON.parse(e.postData.contents);
+  } catch (err) {
+    return jsonOut({ text: 'Kon event niet parsen: ' + err });
+  }
+  try {
+    let result;
+    switch (event.type) {
+      case 'MESSAGE':            result = onMessage(event); break;
+      case 'ADDED_TO_SPACE':     result = onAddToSpace(event); break;
+      case 'REMOVED_FROM_SPACE': result = onRemoveFromSpace(event) || {}; break;
+      default:                   result = { text: 'Onbekend event-type: ' + event.type };
+    }
+    return jsonOut(result || {});
+  } catch (err) {
+    console.error(err);
+    return jsonOut({ text: '🚧 Bot crashed: ' + (err.message || err) });
+  }
+}
+
+function jsonOut(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 function onMessage(event) {
   try {
     const raw = (event.message && event.message.argumentText
