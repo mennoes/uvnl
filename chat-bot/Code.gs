@@ -175,7 +175,7 @@ function renderViaScreenshotOne(targetUrl, w, h) {
     wait_until: 'network_idle',
     delay: '1',
     cache: 'true',
-    cache_ttl: '3600',
+    cache_ttl: '14400',
     response_type: 'by_format'
   };
   const qs = Object.keys(params)
