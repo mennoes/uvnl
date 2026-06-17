@@ -577,11 +577,24 @@ function activeFmts() {
   return FMTS.filter(f => G('chk' + f.id) && G('chk' + f.id).checked);
 }
 
+let _fmtOrder = 0;
 function onFmtChange() {
   FMTS.forEach(f => {
     const box = G('box' + f.id);
     const chk = G('chk' + f.id);
-    if (box && chk) box.classList.toggle('hidden', !chk.checked);
+    if (!box || !chk) return;
+    const wasHidden = box.classList.contains('hidden');
+    box.classList.toggle('hidden', !chk.checked);
+    if (chk.checked && wasHidden) {
+      // Zojuist aangevinkt: zet bovenaan via decreasing CSS order
+      // (grid-items met lagere order komen eerder). Op mobile (1 kolom)
+      // dus letterlijk boven de eerder zichtbare boxes. Op desktop
+      // schuift 'ie naar linksboven.
+      _fmtOrder--;
+      box.style.order = _fmtOrder;
+    } else if (!chk.checked) {
+      box.style.order = '';
+    }
   });
   updateBtnLabels();
   generate();
