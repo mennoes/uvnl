@@ -152,6 +152,24 @@ textarea:focus{border-color:var(--uvnl-green)}
 .status-bar.show{transform:translateX(-50%) translateY(0)}
 
 @media(max-width:900px){.layout{grid-template-columns:1fr}.preview-grid{grid-template-columns:1fr}}
+
+/* ── Headless render-mode voor Google Chat bot (?headless=1) ── */
+body.headless{padding:0;margin:0;background:transparent}
+body.headless .topbar,
+body.headless .page-head,
+body.headless .sidebar,
+body.headless .gallery-wrap,
+body.headless .preview-head,
+body.headless .btn-row,
+body.headless .canvas-edit-overlay,
+body.headless .status-bar{display:none !important}
+body.headless .page,
+body.headless .layout,
+body.headless .preview-grid{display:block;max-width:none;padding:0;margin:0;gap:0}
+body.headless .preview-box{background:transparent;border:none;border-radius:0;box-shadow:none;display:block}
+body.headless .preview-box.hidden{display:none !important}
+body.headless .checker{padding:0;background:transparent}
+body.headless .checker canvas{background:transparent !important;box-shadow:none;outline:none;max-width:none}
 </style>
 </head>
 <body>
@@ -701,6 +719,23 @@ function applyUrlParams() {
   items[activeIdx].text = decodeURIComponent(p.get('t').replace(/\+/g,' '));
   if (p.has('fs')) { const v = +p.get('fs'); if (v>=40&&v<=180) items[activeIdx].fs = v; }
   if (p.has('style')) { const v = p.get('style'); if (v==='bold'||v==='condensed') items[activeIdx].style = v; }
+  if (p.has('bc')) { const v = p.get('bc'); if (/^#?[0-9a-f]{6}$/i.test(v)) items[activeIdx].bc = v.startsWith('#') ? v : '#'+v; }
+  if (p.has('tc')) { const v = p.get('tc'); if (/^#?[0-9a-f]{6}$/i.test(v)) items[activeIdx].tc = v.startsWith('#') ? v : '#'+v; }
+
+  // Headless mode voor de Google Chat bot: alleen één canvas op
+  // exacte format-resolutie, transparante body, rest weg.
+  if (p.get('headless') === '1') {
+    const fmt = p.get('format');
+    if (fmt) {
+      FMTS.forEach(f => {
+        const chk = G('chk' + f.id);
+        if (chk) chk.checked = (f.id === fmt);
+      });
+    }
+    document.body.classList.add('headless');
+    onFmtChange();
+  }
+
   renderItemList();
   generate();
   if (p.get('dl') === '1') setTimeout(renderAll, 900);

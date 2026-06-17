@@ -1,0 +1,13 @@
+{
+  "timeZone": "Europe/Amsterdam",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/chat.bot",
+    "https://www.googleapis.com/auth/drive.file"
+  ],
+  "chat": {
+    "addToSpaceFallbackMessage": "Hoi! Stuur me een titel + formaat en ik render de UvNL titelbalk. Bijv: `Deze truc laat je 20% meer onthouden 9:16`. Formaten: 9:16, 4:5, 16:9, 1:1. Style: voeg `caps` toe voor de Condensed FULL CAPS variant."
+  }
+}
