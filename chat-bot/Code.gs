@@ -192,28 +192,14 @@ function renderViaScreenshotOne(targetUrl, w, h) {
   if (code >= 400) {
     throw new Error('screenshotone HTTP ' + code + ' — ' + resp.getContentText().slice(0, 200));
   }
+  // drive.file scope laat ons files direct in My Drive root aanmaken
+  // en sharen. Folders aanmaken vereist de bredere drive-scope; die
+  // permissie-prompt willen we niet, dus accepteren we rommel in root.
   const blob = resp.getBlob().setContentType('image/png')
     .setName('uvnl-titelbalk-' + Date.now() + '.png');
-  const folder = getOrCreateBotFolder();
-  const file = folder.createFile(blob);
+  const file = DriveApp.createFile(blob);
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   return 'https://drive.google.com/uc?export=view&id=' + file.getId();
-}
-
-function getOrCreateBotFolder() {
-  // drive.file scope mag geen Drive doorzoeken (getFoldersByName),
-  // wel files/folders aanmaken en daarna ophalen via ID. We cachen
-  // de folder-ID in Script Properties zodat we 'm niet hoeven te
-  // zoeken.
-  const props = PropertiesService.getScriptProperties();
-  const cachedId = props.getProperty('BOT_FOLDER_ID');
-  if (cachedId) {
-    try { return DriveApp.getFolderById(cachedId); }
-    catch (e) { /* folder weg/onbereikbaar -> opnieuw aanmaken */ }
-  }
-  const folder = DriveApp.createFolder('UvNL Titelbalk Bot — renders');
-  props.setProperty('BOT_FOLDER_ID', folder.getId());
-  return folder;
 }
 
 // ── Chat-replies ─────────────────────────────────────────────
