@@ -187,19 +187,18 @@ function renderViaScreenshotOne(targetUrl, w, h) {
   // bytes. We fetchen 'm in Apps Script en uploaden naar Drive zodat
   // Chat de afbeelding direct kan tonen zonder op een live render te
   // wachten. Drive-link is publiek voor "ANYONE_WITH_LINK".
-  const resp = UrlFetchApp.fetch(apiUrl, { muteHttpExceptions: true });
-  const code = resp.getResponseCode();
+  // Geen Drive-opslag: we geven de screenshotone API-URL direct terug.
+  // De URL serveert image/png bytes (response_type=by_format), Chat
+  // toont 'm dus als image-widget. cache_ttl=14400 zorgt dat herhaalde
+  // views naar dezelfde titel/format binnen 4u uit hun cache komen.
+  // Probeer eerst een HEAD-achtige check zodat we vroeg falen bij
+  // quota- of authproblemen ipv een broken image in Chat.
+  const probe = UrlFetchApp.fetch(apiUrl, { method: 'get', muteHttpExceptions: true, followRedirects: false });
+  const code = probe.getResponseCode();
   if (code >= 400) {
-    throw new Error('screenshotone HTTP ' + code + ' — ' + resp.getContentText().slice(0, 200));
+    throw new Error('screenshotone HTTP ' + code + ' — ' + probe.getContentText().slice(0, 200));
   }
-  // drive.file scope laat ons files direct in My Drive root aanmaken
-  // en sharen. Folders aanmaken vereist de bredere drive-scope; die
-  // permissie-prompt willen we niet, dus accepteren we rommel in root.
-  const blob = resp.getBlob().setContentType('image/png')
-    .setName('uvnl-titelbalk-' + Date.now() + '.png');
-  const file = DriveApp.createFile(blob);
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  return 'https://drive.google.com/uc?export=view&id=' + file.getId();
+  return apiUrl;
 }
 
 // ── Chat-replies ─────────────────────────────────────────────
